@@ -1,4 +1,4 @@
-## Screen Record the project
+## Screen Record of the project
 Screen Record: https://github.com/user-attachments/assets/d9f2eb9f-8914-4a6e-950c-da11bd454921
 
 
