@@ -1,66 +1,260 @@
-// pages/api/getTokenBalance.ts
-import type { NextApiRequest, NextApiResponse } from 'next';
+// utils/getTokenBalance.ts
+import { ethers } from 'ethers';
+import { NextApiRequest, NextApiResponse } from 'next';
+
+// Replace with the ABI (Application Binary Interface) of the token contract
+
+const tokenABI = [
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "name",
+      "outputs": [
+        {
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_spender",
+          "type": "address"
+        },
+        {
+          "name": "_value",
+          "type": "uint256"
+        }
+      ],
+      "name": "approve",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "totalSupply",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_from",
+          "type": "address"
+        },
+        {
+          "name": "_to",
+          "type": "address"
+        },
+        {
+          "name": "_value",
+          "type": "uint256"
+        }
+      ],
+      "name": "transferFrom",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "decimals",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint8"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_owner",
+          "type": "address"
+        }
+      ],
+      "name": "balanceOf",
+      "outputs": [
+        {
+          "name": "balance",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [],
+      "name": "symbol",
+      "outputs": [
+        {
+          "name": "",
+          "type": "string"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "constant": false,
+      "inputs": [
+        {
+          "name": "_to",
+          "type": "address"
+        },
+        {
+          "name": "_value",
+          "type": "uint256"
+        }
+      ],
+      "name": "transfer",
+      "outputs": [
+        {
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "constant": true,
+      "inputs": [
+        {
+          "name": "_owner",
+          "type": "address"
+        },
+        {
+          "name": "_spender",
+          "type": "address"
+        }
+      ],
+      "name": "allowance",
+      "outputs": [
+        {
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "payable": false,
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "payable": true,
+      "stateMutability": "payable",
+      "type": "fallback"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "owner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "spender",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "value",
+          "type": "uint256"
+        }
+      ],
+      "name": "Approval",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "name": "from",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "name": "to",
+          "type": "address"
+        },
+        {
+          "indexed": false,
+          "name": "value",
+          "type": "uint256"
+        }
+      ],
+      "name": "Transfer",
+      "type": "event"
+    }
+  ];
+
+// Replace with the address of the token contract
+const tokenAddress = '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48';
+
+
+const provider = new ethers.providers.JsonRpcProvider(
+    'https://mainnet.infura.io/v3/YOUR_PROJECT_ID'
+  );
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  try {   
-
-    const INFURA_BASE_URL = `https://mainnet.infura.io/v3/${process.env.NEXT_PUBLIC_INFURA_PROJECT_ID}`;
-
-    if (req.method !== 'GET') {
-      return res.status(405).json({ error: 'Method not allowed' });
-    }
-
+  try {
     const { address } = req.query;
 
     if (!address || typeof address !== 'string') {
       return res.status(400).json({ error: 'Invalid address' });
     }
 
-    const payload = {
-      jsonrpc: '2.0',
-      method: 'eth_call',
-      params: [
-        {
-          to: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48',
-          data: `0x70a08231000000000000000000000000${address.toLowerCase().substring(2)}`
-        },
-        'latest'
-      ],
-      id: 1
-    };
+    const provider = new ethers.providers.JsonRpcProvider(
+      process.env.NEXT_PUBLIC_RPC_URL
+    );
+    const tokenContract = new ethers.Contract(tokenAddress, tokenABI, provider);
+    const balance = await tokenContract.balanceOf(address);
 
-    try {
-      const response = await fetch(INFURA_BASE_URL, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload)
-      });
-
-      const responseText = await response.text();
-      const responseData = JSON.parse(responseText);
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}, ${responseText}`);
-      }
-
-      if (responseData.error) {
-        throw new Error(`API Error: ${responseData.error.message}`);
-      }
-
-    } catch (fetchError) {
-      console.error('Fetch Error Details:', fetchError);
-      throw fetchError;
-    }
+    res.status(200).json({ balance: ethers.utils.formatEther(balance) });
   } catch (error) {
-    console.error('Complete Error Stack:', error);
-    res.status(500).json({ 
-      error: 'Failed to fetch token balance', 
-      details: error instanceof Error ? error.message : 'Unknown error' 
-    });
+    console.error('Error fetching token balance:', error);
+    res.status(500).json({ error: 'Error fetching token balance' });
   }
 }
