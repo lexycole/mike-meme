@@ -1,6 +1,5 @@
-import { Box, Flex } from "@chakra-ui/react";
+import { Box } from "@chakra-ui/react";
 import TokenBalance from "@src/components/TokenBalance/TokenBalance";
-import { Typography } from "@src/components/Typography";
 import { Meta } from "@src/containers/Meta";
 import Pools from "@src/containers/PoolPage";
 import { Layout } from "@src/layouts";
@@ -11,13 +10,7 @@ const Pool = () => {
     <>
       <Meta title="Pools | MikeToken" description="" />
       <Box minHeight={"100vh"}>
-
-      <Flex maxWidth={"1200px"} w={"100%"} mx="auto" justifyContent={"center"}>
-        <Typography textAlign={"left"} type="headline2" color={"text.primary"}>
-        <TokenBalance address={"0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48"} />
-        </Typography>
-      </Flex>
-       
+        <TokenBalance address={""} />
         <Pools />
         {/* <div className="flex bg-default h-[100vh] justify-center items-center relative">
           <div className="text-center mb-20">
