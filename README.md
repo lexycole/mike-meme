@@ -1,5 +1,5 @@
 ## Screen Record of the project
-Screen Record: https://github.com/user-attachments/assets/d9f2eb9f-8914-4a6e-950c-da11bd454921
+Screen Record: https://github.com/user-attachments/assets/6d41a705-753a-4f2d-827a-64116f35fc86
 
 
 
